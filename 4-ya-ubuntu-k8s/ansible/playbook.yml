@@ -1,0 +1,31 @@
+- name: "Install K8S Sandbox in Yandex"
+  become: yes
+  hosts: all
+  
+  tasks:
+    - name: "Update cache"
+      apt:
+        update_cache: true
+
+    - name: "Install snapd"
+      apt:
+        name: snapd
+
+    - name: "Install MicroK8S"
+      snap:
+        name:  microk8s
+        classic: true
+
+    - name: Adding existing user to group microk8s
+      user:
+        name: 'ubuntu'
+        groups: microk8s
+        append: yes
+
+    - name: Owning config folder
+      file:
+        name: '/home/{{ansible_user}}/.kube'
+        state: directory
+        recurse: yes
+        owner: "{{ansible_user}}"
+        group: "{{ansible_user}}"
