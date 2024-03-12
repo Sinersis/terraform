@@ -29,3 +29,13 @@
         recurse: yes
         owner: "{{ansible_user}}"
         group: "{{ansible_user}}"
+
+    - name: Add external IP to config cert
+      lineinfile:
+        path: "/var/snap/microk8s/current/certs/csr.conf.template"
+        search_string: '#MOREIPS'
+        line: "IP.3 = {{ansible_ssh_host}}"
+
+    - name: Regenerate Certs
+      command:
+        cmd: 'sudo microk8s refresh-certs --cert front-proxy-client.crt'
