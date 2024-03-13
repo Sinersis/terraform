@@ -1,0 +1,27 @@
+variable "instances_config" {
+  type = map(object({
+    cores         = number
+    memory        = number
+    core_fraction = number
+    platform_id   = string
+    preemptible   = bool
+    name          = string
+    disk_size     = number
+    php_ver       = string
+    node_ver      = string
+  }))
+
+  default = {
+    0 = {
+      name          = "app"
+      cores         = 2
+      memory        = 2
+      core_fraction = 5
+      platform_id   = "standard-v1"
+      preemptible   = false
+      disk_size     = 80
+      php_ver       = "8.2"
+      node_ver      = "20.11"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+#cloud-config
+datasource:
+ Ec2:
+  strict_id: false
+ssh_pwauth: no
+users:
+  - name: service
+    groups: sudo
+    shell: /bin/bash
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    ssh-authorized-keys:
+      -  {cat ~/.ssh/main_ssh_key.pub}
+  - name: web
+    groups: web
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - {cat ~/.ssh/main_ssh_key.pub}

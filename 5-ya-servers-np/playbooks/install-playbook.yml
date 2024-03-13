@@ -1,0 +1,89 @@
+- name: "Base install software"
+  become: true
+  hosts: all
+
+  tasks:
+    - name: "Update Cache"
+      apt:
+        update_cache: yes
+
+    - name: Disable SWAP
+      shell:
+        cmd: swapoff -a
+
+    - name: Remove Swap from fstab
+      mount:
+        name: swap
+        fstype: swap
+        state: absent
+
+    - name: "Install Unzip"
+      apt:
+        name: unzip
+        state: present
+      when: inventory_hostname != "app-docker"
+
+    - name: "Install CURL"
+      apt:
+        name: curl
+        state: present
+      when: inventory_hostname != "app-docker"
+
+    - name: "Install GIT"
+      apt:
+        name: git
+        state: present
+      when: inventory_hostname != "app-docker"
+
+    - name: "Install Nginx"
+      apt:
+        name: nginx
+        state: present
+      when: inventory_hostname != "app-docker"
+
+    - name: "Copy Nginx config"
+      copy:
+        src: ./config/nginx.conf
+        dest: /etc/nginx/nginx.conf
+      when: inventory_hostname != "app-docker"
+
+    - name: "Install PHP 8.0"
+      include_tasks: "parts/php/php-8.0.yml"
+      when: inventory_hostname == "app-payment-gateway"
+
+    - name: "Install PHP 8.1"
+      include_tasks: "parts/php/php-8.1.yml"
+      when: inventory_hostname == "app-nko" or
+            inventory_hostname == "app-main"
+
+    - name: "Install PHP 8.2"
+      include_tasks: "parts/php/php-8.2.yml"
+      when: inventory_hostname == "app-api-gateway" or 
+            inventory_hostname == "app-crm" or
+            inventory_hostname == "app-core"
+
+    - name: "Install Composer"
+      apt:
+        name: composer
+        state: present
+      when: inventory_hostname != "app-docker"
+
+    - name: "Restart NGINX"
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes
+      when: inventory_hostname != "app-docker"
+
+    - name: "Add user Web"
+      user:
+        name: web
+        shell: /bin/bash
+        home: /home/web
+      when: inventory_hostname != "app-docker"
+
+    - name: "Add authorized keys"
+      authorized_key:
+        user: "web"
+        key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILe3bG+EwHDhBMjUYPfSp5srPnynZug371Bb/z1JmoH5 your_email@example.com
+      when: inventory_hostname != "app-docker"

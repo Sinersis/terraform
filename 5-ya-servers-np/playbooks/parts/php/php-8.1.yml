@@ -1,0 +1,51 @@
+- name: "Add repo"
+  apt_repository:
+    repo: ppa:ondrej/php
+    state: present
+
+- name: "Update Cache"
+  apt:
+    update_cache: yes
+
+- name: "Install PHP 8.1"
+  apt:
+    name: php8.1-fpm
+    state: present
+
+- name: "Install ext for PHP 8.1"
+  apt:
+    pkg:
+      - php8.1-common
+      - php8.1-bcmath
+      - php8.1-bz2
+      - php8.1-curl
+      - php8.1-dev
+      - php8.1-gd
+      - php8.1-imagick
+      - php8.1-mbstring
+      - php8.1-memcached
+      - php8.1-memcache
+      - php8.1-mysql
+      - php8.1-soap
+      - php8.1-uuid
+      - php8.1-xml
+      - php8.1-xsl
+      - php8.1-yaml
+      - php8.1-zip
+      - php8.1-excimer
+
+- name: "Copy www.conf (PHP)"
+  copy:
+    src: ./config/www.conf
+    dest: /etc/php/8.1/fpm/pool.d/www.conf
+
+- name: "Copy memory-limit.ini (PHP)"
+  copy:
+    src: ./config/memory-limit.ini
+    dest: /etc/php/8.1/fpm/conf.d/memory-limit.ini
+
+- name: "Restart service (PHP)"
+  service:
+    name: php8.1-fpm
+    state: restarted
+    enabled: yes

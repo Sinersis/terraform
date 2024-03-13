@@ -1,0 +1,6 @@
+token                   = ""
+cloud_id                = ""
+folder_id               = ""
+subnet_id               = ""
+ssh_key_path            = ""
+ssh_private_key_path    = ""
