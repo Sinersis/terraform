@@ -2,40 +2,25 @@
   become: no
   hosts: all
   gather_facts: false
+  roles:
+    - role: node
+      vars:
+        node_version: 18
+      when: inventory_hostname == "app-crm" or inventory_hostname == "app-core"
+    - role: node
+      vars:
+        node_version: 20
+      when: inventory_hostname != "app-docker" and inventory_hostname != "app-crm" and inventory_hostname != "app-core"
 
   vars:
     repo_list:
-      - { link: "", folder_name: "develop", branch_name: "", host_name: "app-main" }
       - { link: "", folder_name: "master", branch_name: "", host_name: "app-main" }
-      - { link: "", folder_name: "develop", branch_name: "", host_name: "app-crm" }
       - { link: "", folder_name: "master", branch_name: "", host_name: "app-crm" }
-      - { link: "", folder_name: "develop/backend", branch_name: "", host_name: "app-core" }
       - { link: "", folder_name: "master/backend", branch_name: "", host_name: "app-core" }
-      - { link: "", folder_name: "demo/backend", branch_name: "", host_name: "app-core" }
-      - { link: "", folder_name: "develop/frontend", branch_name: "", host_name: "app-core" }
       - { link: "", folder_name: "master/frontend", branch_name: "", host_name: "app-core" }
-      - { link: "", folder_name: "demo/frontend", branch_name: "", host_name: "app-core" }
-      - { link: "", folder_name: "develop", branch_name: "", host_name: "app-api-gateway" }
-      - { link: "", folder_name: "master", branch_name: "", host_name: "app-api-gateway" }
-      - { link: "", folder_name: "develop", branch_name: "", host_name: "app-nko" }
       - { link: "", folder_name: "master", branch_name: "", host_name: "app-nko" }
-      - { link: "", folder_name: "develop", branch_name: "", host_name: "app-payment-gateway" }
-      - { link: "", folder_name: "master", branch_name: "", host_name: "app-payment-gateway" }
 
   tasks:
-    - name: Install nvm
-      shell: |
-        curl curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-      when: inventory_hostname != "app-docker"
-
-    - name: "Install Node 18"
-      include_tasks: ./parts/node/node-18.yml
-      when: inventory_hostname == "app-crm" or inventory_hostname == "app-core"
-
-    - name: "Install Node 20"
-      include_tasks: ./parts/node/node-20.yml
-      when: inventory_hostname != "app-docker" and inventory_hostname != "app-crm" and inventory_hostname != "app-core"
-
     - name: "Install PM2"
       shell: |
         /bin/bash -c "source ~/.nvm/nvm.sh && npm install -g pm2"

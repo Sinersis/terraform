@@ -1,0 +1,21 @@
+---
+- name: "Add sudo user"
+  user:
+    name: "{{ user_name }}"
+    shell: /bin/bash
+    home: "/home/{{ user_name }}"
+    groups:
+      - sudo
+  when: need_sudo == true
+
+- name: "Add non-sudo user"
+  user:
+    name: "{{ user_name }}"
+    shell: /bin/bash
+    home: "/home/{{ user_name }}"
+  when: need_sudo == false
+
+- name: "Add authorized keys"
+  authorized_key:
+    user: "{{ user_name }}"
+    key: "{{ public_key }}"

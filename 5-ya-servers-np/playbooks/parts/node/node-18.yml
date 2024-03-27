@@ -1,3 +1,0 @@
-- name: Install node and set version
-  shell: |
-    /bin/bash -c "source ~/.nvm/nvm.sh && nvm install 18 && nvm alias default 18"

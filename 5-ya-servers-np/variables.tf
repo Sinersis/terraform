@@ -23,6 +23,11 @@ variable "subnet_id" {
   description = "https://cloud.yandex.ru/ru/docs/vpc/quickstart?from=int-console-help-center-or-nav"
 }
 
+variable "network_id" {
+  type = string
+  description = "https://cloud.yandex.ru/ru/docs/vpc/quickstart?from=int-console-help-center-or-nav"
+}
+
 variable "default_zone" {
   type        = string
   default     = "ru-central1-a"

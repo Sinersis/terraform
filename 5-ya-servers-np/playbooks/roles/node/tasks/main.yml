@@ -1,0 +1,9 @@
+---
+- name: Install nvm
+  shell: |
+    curl curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | bash
+  when: inventory_hostname != "app-docker"
+
+- name: "Install node {{ node_version }} and set version"
+  shell: |
+    /bin/bash -c "source ~/.nvm/nvm.sh && nvm install {{ node_version }} && nvm alias default {{ node_version }}"

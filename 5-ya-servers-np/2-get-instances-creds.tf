@@ -3,6 +3,7 @@ locals {
 }
 
 resource "local_file" "create_inventory_file" {
+  depends_on = [yandex_mdb_mysql_cluster.mysql_instance]
 
   content = templatefile("./tpl/inventory.tftpl", {
     instances = local.instances

@@ -1,6 +1,27 @@
 - name: "Base install software"
   become: true
   hosts: all
+  roles:
+    - role: create_user
+      vars:
+        user_name: web
+        public_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILe3bG+EwHDhBMjUYPfSp5srPnynZug371Bb/z1JmoH5 your_email@example.com
+    - role: php
+      vars:
+        php_version: 8.0
+      when: inventory_hostname == "app-payment-gateway"
+    - role: php
+      vars:
+        php_version: 8.1
+      when: inventory_hostname == "app-nko"
+    - role: php
+      vars:
+        php_version: 8.2
+      when: inventory_hostname == "app-api-gateway" or inventory_hostname == "app-crm" or inventory_hostname == "app-core"
+    - role: php
+      vars:
+        php_version: 8.3
+      when: inventory_hostname == "app-main"
 
   tasks:
     - name: "Update Cache"
@@ -39,28 +60,12 @@
       apt:
         name: nginx
         state: present
-      when: inventory_hostname != "app-docker"
 
     - name: "Copy Nginx config"
       copy:
         src: ./config/nginx.conf
         dest: /etc/nginx/nginx.conf
       when: inventory_hostname != "app-docker"
-
-    - name: "Install PHP 8.0"
-      include_tasks: "parts/php/php-8.0.yml"
-      when: inventory_hostname == "app-payment-gateway"
-
-    - name: "Install PHP 8.1"
-      include_tasks: "parts/php/php-8.1.yml"
-      when: inventory_hostname == "app-nko" or
-            inventory_hostname == "app-main"
-
-    - name: "Install PHP 8.2"
-      include_tasks: "parts/php/php-8.2.yml"
-      when: inventory_hostname == "app-api-gateway" or 
-            inventory_hostname == "app-crm" or
-            inventory_hostname == "app-core"
 
     - name: "Install Composer"
       apt:
@@ -75,15 +80,6 @@
         enabled: yes
       when: inventory_hostname != "app-docker"
 
-    - name: "Add user Web"
-      user:
-        name: web
-        shell: /bin/bash
-        home: /home/web
-      when: inventory_hostname != "app-docker"
-
-    - name: "Add authorized keys"
-      authorized_key:
-        user: "web"
-        key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILe3bG+EwHDhBMjUYPfSp5srPnynZug371Bb/z1JmoH5 your_email@example.com
-      when: inventory_hostname != "app-docker"
+    - name: "Install Docker host"
+      include_tasks: "parts/docker/docker.yml"
+      when: inventory_hostname == "app-docker"

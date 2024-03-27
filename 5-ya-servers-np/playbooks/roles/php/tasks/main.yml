@@ -1,0 +1,46 @@
+---
+- name: "Add repo"
+  apt_repository:
+    repo: ppa:ondrej/php
+    state: present
+    update_cache: true
+
+- name: "Install FPM and EXT for PHP {{php_version}}"
+  apt:
+    pkg:
+      - "php{{php_version}}-fpm"
+      - "php{{php_version}}-common"
+      - "php{{php_version}}-mysql"
+      - "php{{php_version}}-bcmath"
+      - "php{{php_version}}-bz2"
+      - "php{{php_version}}-curl"
+      - "php{{php_version}}-decimal"
+      - "php{{php_version}}-dev"
+      - "php{{php_version}}-ds"
+      - "php{{php_version}}-enchant"
+      - "php{{php_version}}-excimer"
+      - "php{{php_version}}-gd"
+      - "php{{php_version}}-imagick"
+      - "php{{php_version}}-mbstring"
+      - "php{{php_version}}-mcrypt"
+      - "php{{php_version}}-pq"
+      - "php{{php_version}}-xml"
+      - "php{{php_version}}-xsl"
+      - "php{{php_version}}-zip"
+      - "php{{php_version}}-yaml"
+
+- name: "Copy www.conf (PHP)"
+  copy:
+    src: ../files/www.conf
+    dest: "/etc/php/{{php_version}}/fpm/pool.d/www.conf"
+  notify:
+    - "Restart PHP-FPM service"
+
+- name: "Copy memory-limit.ini (PHP)"
+  copy:
+    src: ../files/memory-limit.ini
+    dest: "/etc/php/{{php_version}}/fpm/conf.d/memory-limit.ini"
+  notify:
+    - "Restart PHP-FPM service"
+
+
