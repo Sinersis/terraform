@@ -1,6 +1,6 @@
 variable "instance_name" {
   type    = list(string)
-  default = ["instance-one", "instance-two", "instance-three"]
+  default = ["develop", "master"]
 }
 
 variable "image_family" {

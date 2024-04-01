@@ -52,6 +52,7 @@ resource "yandex_compute_instance" "instance_platform" {
   # Задаем параметры сети (я взял уже существующую)
   network_interface {
     subnet_id = var.subnet_id
+    nat       = true
   }
 
   metadata = {
