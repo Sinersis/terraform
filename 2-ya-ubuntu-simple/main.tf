@@ -60,3 +60,9 @@ resource "yandex_compute_instance" "instance_platform" {
     ssh-keys           = "ubuntu:${local.ssh-key}"
   }
 }
+
+output "ip" {
+  value = tomap({
+    for name, vm in yandex_compute_instance.instance_platform : vm.name => vm.network_interface.0.nat_ip_address
+  })
+}
